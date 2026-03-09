@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material de Estudo - HTML e CSS</title>
+</head>
+
+<body style="background-color: #d9e6f2; text-align: center;">
+
+    <header style="background-color: #f2f2f2; padding: 20px;">
+        <h1>Material de Estudo Digital</h1>
+        <h2>Introdução ao HTML e CSS</h2>
+    </header>
+
+    <nav style="margin: 20px;">
+        <a href="#html">HTML</a> |
+        <a href="#css">CSS</a> |
+        <a href="#avaliacao">Avaliação</a> |
+        <a href="#quiz">Quiz</a>
+    </nav>
+
+    <section id="html" style="margin: 20px;">
+        <h2>O que é HTML?</h2>
+        <p>
+            HTML é a linguagem responsável por estruturar páginas da web.
+            Com ela organizamos textos, imagens, links e tabelas.
+        </p>
+
+        <h3>Principais Tags:</h3>
+        <ul style="list-style-position: inside;">
+            <li>&lt;html&gt;</li>
+            <li>&lt;head&gt;</li>
+            <li>&lt;body&gt;</li>
+            <li>&lt;p&gt;</li>
+            <li>&lt;a&gt;</li>
+            <li>&lt;img&gt;</li>
+        </ul>
+
+    </section>
+
+    <section id="css" style="margin: 20px;">
+        <h2>O que é CSS?</h2>
+        <p>
+            CSS é a linguagem usada para estilizar o HTML.
+            Podemos alterar cores, tamanhos e posicionamento.
+        </p>
+
+        <table border="1" align="center">
+            <tr>
+                <th>Propriedade</th>
+                <th>Função</th>
+            </tr>
+            <tr>
+                <td>color</td>
+                <td>Cor do texto</td>
+            </tr>
+            <tr>
+                <td>background-color</td>
+                <td>Cor de fundo</td>
+            </tr>
+            <tr>
+                <td>font-size</td>
+                <td>Tamanho da fonte</td>
+            </tr>
+        </table>
+    </section>
+
+	    <section id="avaliacao" style="margin: 20px;">
+        <h2>Formulário de Avaliação</h2>
+
+        <form>
+            <p>Nome:</p>
+            <input type="text"><br><br>
+
+            <p>O conteúdo foi claro?</p>
+            <input type="radio" name="clareza"> Sim
+            <input type="radio" name="clareza"> Não
+            <br><br>
+
+            <p>Nota para o material:</p>
+            <select>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br><br>
+
+            <input type="submit" value="Enviar">
+        </form>
+    </section>
+
+    <section id="quiz" style="margin: 20px;">
+        <h2>Teste seu Conhecimento</h2>
+
+        <form>
+            <p>1) Qual linguagem estrutura a página?</p>
+            <input type="radio" name="q1"> HTML <br>
+            <input type="radio" name="q1"> CSS <br><br>
+
+            <p>2) Qual linguagem estiliza a página?</p>
+            <input type="radio" name="q2"> HTML <br>
+            <input type="radio" name="q2"> CSS <br><br>
+
+            <p>3) A tag &lt;p&gt; serve para:</p>
+            <input type="radio" name="q3"> Criar parágrafo <br>
+            <input type="radio" name="q3"> Criar imagem <br><br>
+
+            <input type="submit" value="Finalizar">
+        </form>
+    </section>
+
+    <footer style="background-color: #f2f2f2; padding: 10px; margin-top: 20px;">
+        <p>Trabalho de Programação Front-End</p>
+    </footer>
+
+</body>
+</html>
