@@ -1,0 +1,41 @@
+body {
+    background-color: #e6f2ff; 
+    font-size: 16px;
+    text-align: center;
+    color: #333;
+}
+
+nav {
+    margin: 15px;
+}
+
+a {
+    margin: 10px;
+    color: #005fa3;
+    font-weight: bold;
+}
+
+button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.secao {
+    background-color: #f0f8ff; 
+    margin: auto;
+    padding: 15px;
+    border-radius: 10px;
+    width: 550px;
+    margin-bottom: 20px;
+}
+
+.secao p:first-child {
+    font-size: 20px; 
+    font-weight: bold;
+}
