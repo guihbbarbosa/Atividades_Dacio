@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Convidados VIP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 460px;
+    }
+
+    h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .btn-add {
+      padding: 10px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover { background: #2563eb; }
+
+    ul { list-style: none; padding: 0; margin: 0; }
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    li:last-child { border-bottom: none; }
+
+    .nome { flex: 1; font-size: 0.95rem; color: #333; }
+    .nome.presente { text-decoration: line-through; color: #aaa; }
+
+    button {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid;
+    }
+
+    .btn-ok  { border-color: #16a34a; color: #16a34a; background: white; }
+    .btn-ed  { border-color: #2563eb; color: #2563eb; background: white; }
+    .btn-del { border-color: #dc2626; color: #dc2626; background: white; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Lista de Convidados VIP</h2>
+
+    <div class="add-row">
+      <input type="text" id="nome-input" placeholder="Nome do convidado">
+      <button class="btn-add" onclick="adicionar()">Adicionar</button>
+    </div>
+
+    <ul id="lista"></ul>
+  </div>
+
+  <script>
+    function adicionar() {
+      const input = document.getElementById('nome-input');
+      const nome = input.value.trim();
+      if (!nome) return;
+
+      const lista = document.getElementById('lista');
+
+      const li = document.createElement('li');
+
+      const span = document.createElement('span');
+      span.className = 'nome';
+      span.textContent = nome;
+
+      const btnOk = document.createElement('button');
+      btnOk.textContent = 'Concluir';
+      btnOk.className = 'btn-ok';
+      btnOk.onclick = () => span.classList.toggle('presente');
+
+      const btnEd = document.createElement('button');
+      btnEd.textContent = 'Editar';
+      btnEd.className = 'btn-ed';
+      btnEd.onclick = () => {
+        const novo = prompt('Novo nome:', span.textContent);
+        if (novo && novo.trim()) span.textContent = novo.trim();
+      };
+
+      const btnDel = document.createElement('button');
+      btnDel.textContent = 'Excluir';
+      btnDel.className = 'btn-del';
+      btnDel.onclick = () => li.remove();
+
+      li.appendChild(span);
+      li.appendChild(btnOk);
+      li.appendChild(btnEd);
+      li.appendChild(btnDel);
+      lista.appendChild(li);
+
+      input.value = '';
+      input.focus();
+    }
+
+    document.getElementById('nome-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') adicionar();
+    });
+  </script>
+</body>
+</html>

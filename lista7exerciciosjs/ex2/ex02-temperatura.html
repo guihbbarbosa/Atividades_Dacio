@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversor de Temperatura</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Conversor de Temperatura</h2>
+
+    <label>Celsius (°C)</label>
+    <input type="number" id="celsius" placeholder="Ex: 100" step="0.1" oninput="deCelsius()">
+
+    <label>Fahrenheit (°F)</label>
+    <input type="number" id="fahrenheit" placeholder="Ex: 212" step="0.1" oninput="deFahrenheit()">
+  </div>
+
+  <script>
+    let bloqueado = false;
+
+    function deCelsius() {
+      if (bloqueado) return;
+      bloqueado = true;
+      const c = parseFloat(document.getElementById('celsius').value);
+      document.getElementById('fahrenheit').value = isNaN(c) ? '' : ((c * 9/5) + 32).toFixed(2);
+      bloqueado = false;
+    }
+
+    function deFahrenheit() {
+      if (bloqueado) return;
+      bloqueado = true;
+      const f = parseFloat(document.getElementById('fahrenheit').value);
+      document.getElementById('celsius').value = isNaN(f) ? '' : ((f - 32) * 5/9).toFixed(2);
+      bloqueado = false;
+    }
+  </script>
+</body>
+</html>

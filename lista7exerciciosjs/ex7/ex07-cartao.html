@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Validador de Cartão</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555; }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      letter-spacing: 0.1em;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover { background: #2563eb; }
+
+    #resultado {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .valido   { background: #d1fae5; color: #065f46; }
+    .invalido { background: #fee2e2; color: #991b1b; }
+
+    .info-grid {
+      display: flex;
+      gap: 10px;
+    }
+
+    .info-box {
+      flex: 1;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .info-box small { display: block; font-size: 0.75rem; color: #888; margin-bottom: 4px; }
+    .info-box span  { font-size: 0.95rem; font-weight: bold; color: #333; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Validador de Cartão</h2>
+
+    <label>Número do cartão (13 a 16 dígitos)</label>
+    <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="19">
+
+    <button onclick="analisar()">Analisar Cartão</button>
+
+    <div id="resultado">
+      <div class="status" id="status"></div>
+      <div class="info-grid">
+        <div class="info-box">
+          <small>Bandeira</small>
+          <span id="bandeira">—</span>
+        </div>
+        <div class="info-box">
+          <small>Setor</small>
+          <span id="setor">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function analisar() {
+      let num = document.getElementById('cartao').value.replace(/\s/g, '');
+
+      if (num.length < 13 || num.length > 16) {
+        alert('Digite entre 13 e 16 dígitos.');
+        return;
+      }
+
+      // Algoritmo de Luhn
+      const digitos = num.split('').reverse();
+      let soma = 0;
+      for (let i = 0; i < digitos.length; i++) {
+        let d = Number(digitos[i]);
+        if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+        soma += d;
+      }
+      const valido = soma % 10 === 0;
+
+      // Bandeira pelo 1º dígito
+      const p = num[0];
+      const bandeiras = { '4': 'Visa', '5': 'Mastercard', '3': 'Amex/Diners', '6': 'Elo/Discover' };
+      const setores   = { '1': 'Aviação', '2': 'Aviação', '3': 'Turismo', '4': 'Bancário',
+                          '5': 'Bancário', '6': 'Mercado', '7': 'Petróleo', '8': 'Telecom', '9': 'Governo' };
+
+      const status = document.getElementById('status');
+      status.className = valido ? 'status valido' : 'status invalido';
+      status.textContent = valido ? '✓ Cartão Válido' : '✗ Cartão Inválido';
+
+      document.getElementById('bandeira').textContent = bandeiras[p] || 'Desconhecida';
+      document.getElementById('setor').textContent    = setores[p]   || '—';
+
+      document.getElementById('resultado').style.display = 'block';
+    }
+
+    // Formata com espaço a cada 4 dígitos
+    document.getElementById('cartao').addEventListener('input', function() {
+      let v = this.value.replace(/\D/g, '').substring(0, 16);
+      this.value = v.replace(/(.{4})/g, '$1 ').trim();
+    });
+  </script>
+</body>
+</html>

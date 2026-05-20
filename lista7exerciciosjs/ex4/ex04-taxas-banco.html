@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Taxas Infinity Bank</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555; }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover { background: #2563eb; }
+
+    #resultado {
+      margin-top: 16px;
+      display: none;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #444;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .linha:last-child { border-bottom: none; font-weight: bold; background: #f0f9ff; color: #1e3a8a; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Taxas Infinity Bank</h2>
+
+    <label>Bandeira</label>
+    <select id="bandeira">
+      <option value="visa">Visa (2%)</option>
+      <option value="master">Mastercard (1,85%)</option>
+      <option value="elo">Elo (3%)</option>
+    </select>
+
+    <label>Valor da venda (R$)</label>
+    <input type="number" id="valor" placeholder="0,00" min="0" step="0.01">
+
+    <label>Parcelas</label>
+    <select id="parcelas">
+      <option value="1">1x</option>
+      <option value="2">2x</option>
+      <option value="3">3x</option>
+      <option value="4">4x</option>
+      <option value="6">6x</option>
+      <option value="12">12x</option>
+    </select>
+
+    <button onclick="calcular()">Simular</button>
+
+    <div id="resultado">
+      <div class="linha"><span>Taxa da bandeira</span><span id="r-taxa"></span></div>
+      <div class="linha"><span>Juros totais</span><span id="r-juros"></span></div>
+      <div class="linha"><span>Taxa mensal</span><span id="r-mensal"></span></div>
+      <div class="linha"><span>Valor por parcela</span><span id="r-parcela"></span></div>
+    </div>
+  </div>
+
+  <script>
+    function calcular() {
+      const venda    = Number(document.getElementById('valor').value);
+      const bandeira = document.getElementById('bandeira').value;
+      const parcelas = Number(document.getElementById('parcelas').value);
+
+      if (!venda) { alert('Informe o valor da venda.'); return; }
+
+      let taxa;
+      switch (bandeira) {
+        case 'visa':   taxa = 0.02;   break;
+        case 'master': taxa = 0.0185; break;
+        case 'elo':    taxa = 0.03;   break;
+      }
+
+      const valorTaxa  = venda * taxa;
+      const juros      = venda * (0.015 * parcelas);
+      const taxaMensal = 12.50 * parcelas;
+      const total      = venda + valorTaxa + juros + taxaMensal;
+
+      document.getElementById('r-taxa').textContent    = 'R$ ' + valorTaxa.toFixed(2);
+      document.getElementById('r-juros').textContent   = 'R$ ' + juros.toFixed(2);
+      document.getElementById('r-mensal').textContent  = 'R$ ' + taxaMensal.toFixed(2);
+      document.getElementById('r-parcela').textContent = parcelas + 'x de R$ ' + (total / parcelas).toFixed(2);
+
+      document.getElementById('resultado').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

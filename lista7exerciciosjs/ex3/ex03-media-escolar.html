@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Média Escolar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555; }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    .notas { display: flex; gap: 10px; }
+    .notas input { margin-bottom: 12px; }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover { background: #2563eb; }
+
+    #resultado {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    .aprovado  { background: #dbeafe; color: #1e3a8a; }
+    .exame     { background: #d1fae5; color: #065f46; }
+    .reprovado { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Média Escolar</h2>
+
+    <label>Nome do aluno</label>
+    <input type="text" id="nome" placeholder="Digite o nome">
+
+    <label>Notas</label>
+    <div class="notas">
+      <input type="number" id="n1" placeholder="Nota 1" min="0" max="10" step="0.1">
+      <input type="number" id="n2" placeholder="Nota 2" min="0" max="10" step="0.1">
+      <input type="number" id="n3" placeholder="Nota 3" min="0" max="10" step="0.1">
+    </div>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    function calcular() {
+      const nome  = document.getElementById('nome').value || 'Aluno';
+      const n1    = Number(document.getElementById('n1').value);
+      const n2    = Number(document.getElementById('n2').value);
+      const n3    = Number(document.getElementById('n3').value);
+      const media = (n1 + n2 + n3) / 3;
+
+      const res = document.getElementById('resultado');
+      res.style.display = 'block';
+
+      if (media >= 7) {
+        res.className = 'aprovado';
+        res.textContent = nome + ' — Aprovado! Média: ' + media.toFixed(2);
+      } else if (media >= 4) {
+        res.className = 'exame';
+        res.textContent = nome + ' — Exame Final. Média: ' + media.toFixed(2) + '. Falta ' + (10 - media).toFixed(2) + ' para 10.';
+      } else {
+        res.className = 'reprovado';
+        res.textContent = nome + ' — Reprovado. Média: ' + media.toFixed(2);
+      }
+    }
+  </script>
+</body>
+</html>

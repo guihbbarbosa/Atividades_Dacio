@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Crédito para Eventos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555; }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover { background: #2563eb; }
+
+    #resultado {
+      margin-top: 16px;
+      display: none;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #444;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .linha:last-child { border-bottom: none; font-weight: bold; background: #f0f9ff; color: #1e3a8a; }
+    .linha.desconto span:last-child { color: #16a34a; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Crédito para Festas & Eventos</h2>
+
+    <label>Pacote</label>
+    <select id="pacote">
+      <option value="50">Standard — R$ 50/pessoa</option>
+      <option value="80">Premium — R$ 80/pessoa</option>
+      <option value="120">Infinity Deluxe — R$ 120/pessoa</option>
+    </select>
+
+    <label>Quantidade de pessoas</label>
+    <input type="number" id="pessoas" placeholder="Ex: 80" min="1">
+
+    <button onclick="calcular()">Calcular Orçamento</button>
+
+    <div id="resultado">
+      <div class="linha"><span>Custo base</span><span id="r-base"></span></div>
+      <div class="linha"><span>Taxa de serviço (10%)</span><span id="r-taxa"></span></div>
+      <div class="linha desconto"><span>Desconto fidelidade (5%)</span><span id="r-desc"></span></div>
+      <div class="linha"><span>Total final</span><span id="r-total"></span></div>
+    </div>
+  </div>
+
+  <script>
+    function calcular() {
+      const preco   = Number(document.getElementById('pacote').value);
+      const pessoas = Number(document.getElementById('pessoas').value);
+
+      if (!pessoas || pessoas <= 0) { alert('Informe a quantidade de pessoas.'); return; }
+
+      const base    = preco * pessoas;
+      const taxa    = base * 0.10;
+      const comTaxa = base + taxa;
+      const desconto = pessoas > 100 ? comTaxa * 0.05 : 0;
+      const total   = comTaxa - desconto;
+
+      document.getElementById('r-base').textContent  = 'R$ ' + base.toFixed(2);
+      document.getElementById('r-taxa').textContent  = 'R$ ' + taxa.toFixed(2);
+      document.getElementById('r-desc').textContent  = desconto > 0 ? '- R$ ' + desconto.toFixed(2) : 'Não aplicável';
+      document.getElementById('r-total').textContent = 'R$ ' + total.toFixed(2);
+
+      document.getElementById('resultado').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
