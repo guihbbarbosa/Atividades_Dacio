@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tutorial: Criando um Wordle com React</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&family=Optimistic+Display:wght@400;600;700&family=Optimistic+Text:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #087ea4;
+    --blue-light: #e6f7ff;
+    --blue-dark: #026082;
+    --yellow: #fbf0df;
+    --yellow-border: #f5d08a;
+    --green: #d8f5e1;
+    --green-border: #7ecfa2;
+    --red: #ffe7e4;
+    --red-text: #d12428;
+    --text: #23272f;
+    --text-muted: #5e6e85;
+    --border: #d0d7de;
+    --bg: #fff;
+    --bg-secondary: #f6f7f9;
+    --code-bg: #f6f7f9;
+    --sidebar-w: 260px;
+    --font-body: 'Optimistic Text', Georgia, serif;
+    --font-head: 'Optimistic Display', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'Courier New', monospace;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* TOP NAV */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 20px;
+    height: 56px;
+  }
+  .topnav-logo { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: var(--blue); text-decoration: none; }
+  .topnav-badge { background: var(--blue); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-left: 4px; }
+  .topnav-links { display: flex; gap: 4px; margin-left: auto; }
+  .topnav-links a { padding: 6px 12px; border-radius: 6px; color: var(--text-muted); text-decoration: none; font-size: 14px; transition: background 0.15s, color 0.15s; }
+  .topnav-links a:hover { background: var(--bg-secondary); color: var(--text); }
+
+  /* LAYOUT */
+  .layout { display: flex; max-width: 1280px; margin: 0 auto; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    position: sticky; top: 56px; height: calc(100vh - 56px);
+    overflow-y: auto; padding: 24px 16px;
+    border-right: 1px solid var(--border);
+  }
+  .sidebar-section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted);
+    padding: 8px 12px 4px; margin-top: 8px;
+  }
+  .sidebar a {
+    display: block; padding: 6px 12px; border-radius: 6px;
+    color: var(--text-muted); text-decoration: none; font-size: 14px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .sidebar a:hover, .sidebar a.active { background: var(--blue-light); color: var(--blue); font-weight: 500; }
+
+  /* MAIN CONTENT */
+  .content { flex: 1; min-width: 0; padding: 48px 80px 80px; max-width: 860px; }
+
+  .chapter-tag {
+    display: inline-block;
+    font-size: 13px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--blue);
+    border: 2px solid var(--blue); border-radius: 20px;
+    padding: 2px 12px; margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: var(--font-head); font-size: 44px; font-weight: 700;
+    line-height: 1.15; color: var(--text); margin-bottom: 20px;
+  }
+  h2 {
+    font-family: var(--font-head); font-size: 28px; font-weight: 700;
+    color: var(--text); margin: 56px 0 16px;
+    padding-top: 56px; border-top: 1px solid var(--border);
+  }
+  h3 {
+    font-family: var(--font-head); font-size: 20px; font-weight: 700;
+    color: var(--text); margin: 32px 0 12px;
+  }
+
+  p { margin-bottom: 16px; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* LEAD */
+  .lead { font-size: 20px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+
+  /* WHAT YOU WILL BUILD */
+  .what-build {
+    background: var(--blue-light); border: 1px solid #b3dff0;
+    border-radius: 12px; padding: 24px 28px; margin: 32px 0;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .what-build-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+  .what-build h4 { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--blue-dark); margin-bottom: 8px; }
+  .what-build ul { padding-left: 20px; color: var(--text); }
+  .what-build ul li { margin-bottom: 4px; font-size: 15px; }
+
+  /* CALLOUTS */
+  .callout {
+    border-radius: 10px; padding: 18px 22px; margin: 24px 0;
+    font-size: 15.5px;
+  }
+  .callout-note { background: var(--yellow); border-left: 4px solid #e6a700; }
+  .callout-tip { background: var(--green); border-left: 4px solid #3cb371; }
+  .callout-warn { background: var(--red); border-left: 4px solid #d12428; }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* CODE BLOCKS */
+  pre {
+    background: #1e1e2e; color: #cdd6f4;
+    border-radius: 10px; padding: 20px 24px;
+    font-family: var(--font-mono); font-size: 14px; line-height: 1.7;
+    overflow-x: auto; margin: 20px 0;
+    position: relative;
+  }
+  pre .filename {
+    display: block; margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px solid #45475a;
+    font-size: 12px; color: #a6adc8;
+    font-family: var(--font-mono);
+  }
+  code { font-family: var(--font-mono); font-size: 0.88em; }
+  p code, li code {
+    background: var(--code-bg); color: var(--red-text);
+    border-radius: 4px; padding: 2px 6px;
+    border: 1px solid var(--border);
+  }
+
+  /* Syntax highlight colors */
+  .kw { color: #cba6f7; }   /* keyword */
+  .fn { color: #89b4fa; }   /* function */
+  .st { color: #a6e3a1; }   /* string */
+  .cm { color: #6c7086; font-style: italic; } /* comment */
+  .nm { color: #fab387; }   /* number/name */
+  .tg { color: #f38ba8; }   /* tag */
+  .at { color: #89dceb; }   /* attr */
+  .vr { color: #f2cdcd; }   /* variable */
+
+  /* STEPS */
+  .steps { counter-reset: step; }
+  .step {
+    counter-increment: step;
+    border-left: 3px solid var(--blue);
+    padding: 0 0 32px 28px;
+    margin-left: 12px;
+    position: relative;
+  }
+  .step::before {
+    content: counter(step);
+    position: absolute; left: -18px; top: 0;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .step h3 { margin-top: 4px; margin-bottom: 12px; }
+
+  /* WORDLE DEMO */
+  .demo-box {
+    background: #121213; border-radius: 12px;
+    padding: 24px; margin: 24px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .demo-grid { display: flex; flex-direction: column; gap: 5px; }
+  .demo-row { display: flex; gap: 5px; }
+  .demo-tile {
+    width: 48px; height: 48px; border: 2px solid #565758;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: #fff;
+    font-family: var(--font-mono);
+  }
+  .tile-correct { background: #538d4e; border-color: #538d4e; }
+  .tile-present { background: #b59f3b; border-color: #b59f3b; }
+  .tile-absent  { background: #3a3a3c; border-color: #3a3a3c; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; }
+  th { background: var(--bg-secondary); font-weight: 600; text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+  td { padding: 9px 14px; border: 1px solid var(--border); }
+  tr:nth-child(even) td { background: var(--bg-secondary); }
+
+  /* SECTION DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* NAVIGATION BOTTOM */
+  .nav-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: #fff; text-decoration: none;
+    padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 15px;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: var(--blue-dark); text-decoration: none; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { display: flex; flex-direction: column; gap: 6px; margin: 32px 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
+  .progress-bar { height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 4px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .content { padding: 32px 24px 60px; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="topnav-logo" href="#">⚛ React <span class="topnav-badge">Tutorial</span></a>
+  <div class="topnav-links">
+    <a href="#">Aprenda</a>
+    <a href="#">Referência</a>
+    <a href="#">Comunidade</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-title">Tutorial Wordle</div>
+    <a href="#intro" class="active">Introdução</a>
+    <a href="#setup">Configuração</a>
+    <a href="#estado">Estado do Jogo</a>
+    <a href="#board">O Tabuleiro</a>
+    <a href="#logica">Lógica das Cores</a>
+    <a href="#teclado">Teclado Virtual</a>
+    <a href="#fim">Fim de Jogo</a>
+    <a href="#completo">Código Completo</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <div class="chapter-tag">Tutorial</div>
+    <h1>Criando um Wordle com React</h1>
+    <p class="lead">
+      Neste tutorial você vai construir um clone funcional do Wordle — o famoso jogo de adivinhar palavras — usando React do zero. Ao final, você terá um jogo completo com tabuleiro, teclado virtual e feedback visual de letras corretas.
+    </p>
+
+    <!-- WHAT YOU WILL BUILD -->
+    <div class="what-build">
+      <div class="what-build-icon">🎮</div>
+      <div>
+        <h4>O que você vai construir</h4>
+        <ul>
+          <li>Uma grade 6×5 de tiles que mostram seus chutes</li>
+          <li>Feedback visual: 🟩 certo, 🟨 presente, ⬛ ausente</li>
+          <li>Teclado virtual clicável com estado das letras</li>
+          <li>Suporte a digitação física + animações</li>
+          <li>Detecção de vitória e derrota</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DEMO VISUAL -->
+    <div class="demo-box">
+      <div class="demo-grid">
+        <div class="demo-row">
+          <div class="demo-tile tile-correct">C</div>
+          <div class="demo-tile tile-absent">R</div>
+          <div class="demo-tile tile-present">A</div>
+          <div class="demo-tile tile-absent">N</div>
+          <div class="demo-tile tile-absent">E</div>
+        </div>
+        <div class="demo-row">
+          <div class="demo-tile tile-correct">C</div>
+          <div class="demo-tile tile-correct">H</div>
+          <div class="demo-tile tile-correct">E</div>
+          <div class="demo-tile tile-correct">S</div>
+          <div class="demo-tile tile-correct">S</div>
+        </div>
+        <div class="demo-row">
+          <div class="demo-tile"></div><div class="demo-tile"></div>
+          <div class="demo-tile"></div><div class="demo-tile"></div><div class="demo-tile"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-note">
+      <strong>📌 Pré-requisitos</strong>
+      Conhecimento básico de HTML, CSS e JavaScript. Familiaridade com componentes React e o hook <code>useState</code> é útil, mas não obrigatório.
+    </div>
+
+    <!-- ====== SETUP ====== -->
+    <h2 id="setup">Configuração do Projeto</h2>
+    <p>Vamos usar o <strong>Vite</strong> para criar um projeto React rapidamente. Abra seu terminal e rode:</p>
+
+    <pre><code>npm create vite@latest wordle-clone -- --template react
+cd wordle-clone
+npm install
+npm run dev</code></pre>
+
+    <p>Apague os arquivos que não precisamos e deixe a estrutura assim:</p>
+    <pre><code><span class="cm">src/
+  App.jsx        ← nosso jogo
+  main.jsx       ← ponto de entrada
+  index.css      ← estilos globais</span></code></pre>
+
+    <p>Em <code>index.css</code>, adicione um reset básico:</p>
+    <pre><code><span class="filename">src/index.css</span><span class="vr">*, *::before, *::after</span> {
+  <span class="at">box-sizing</span>: border-box;
+  <span class="at">margin</span>: <span class="nm">0</span>;
+  <span class="at">padding</span>: <span class="nm">0</span>;
+}
+<span class="vr">body</span> {
+  <span class="at">background</span>: <span class="st">#121213</span>;
+  <span class="at">font-family</span>: <span class="st">'Clear Sans'</span>, Arial, sans-serif;
+}</code></pre>
+
+    <!-- ====== ESTADO ====== -->
+    <h2 id="estado">Projetando o Estado do Jogo</h2>
+    <p>Antes de escrever qualquer JSX, pense: <em>quais dados o jogo precisa?</em></p>
+
+    <table>
+      <thead><tr><th>Estado</th><th>Tipo</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td><code>secret</code></td><td><code>string</code></td><td>A palavra secreta (ex: "CRANE")</td></tr>
+        <tr><td><code>guesses</code></td><td><code>string[]</code></td><td>Chutes já enviados</td></tr>
+        <tr><td><code>current</code></td><td><code>string</code></td><td>O chute sendo digitado agora</td></tr>
+        <tr><td><code>gameOver</code></td><td><code>boolean</code></td><td>Se o jogo terminou</td></tr>
+      </tbody>
+    </table>
+
+    <p>Vamos definir também as constantes do jogo:</p>
+
+    <pre><code><span class="filename">src/App.jsx</span><span class="cm">// Lista de palavras possíveis (adicione quantas quiser)</span>
+<span class="kw">const</span> <span class="vr">WORDS</span> = [
+  <span class="st">"APPLE"</span>, <span class="st">"BRAVE"</span>, <span class="st">"CRANE"</span>, <span class="st">"DRIVE"</span>, <span class="st">"EAGLE"</span>,
+  <span class="st">"FLAME"</span>, <span class="st">"GRACE"</span>, <span class="st">"HOUSE"</span>, <span class="st">"IVORY"</span>, <span class="st">"JOKER"</span>,
+  <span class="cm">// ... mais palavras</span>
+];
+
+<span class="kw">const</span> <span class="vr">WORD_LENGTH</span> = <span class="nm">5</span>;   <span class="cm">// letras por palavra</span>
+<span class="kw">const</span> <span class="vr">MAX_GUESSES</span> = <span class="nm">6</span>;  <span class="cm">// máximo de tentativas</span></code></pre>
+
+    <p>Agora o componente principal com o estado:</p>
+
+    <pre><code><span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span>, <span class="fn">useCallback</span> } <span class="kw">from</span> <span class="st">"react"</span>;
+
+<span class="kw">export default function</span> <span class="fn">WordleGame</span>() {
+  <span class="cm">// Escolhe uma palavra aleatória ao iniciar</span>
+  <span class="kw">const</span> [secret] = <span class="fn">useState</span>(() =>
+    WORDS[Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * WORDS.length)]
+  );
+
+  <span class="kw">const</span> [guesses, setGuesses] = <span class="fn">useState</span>([]); <span class="cm">// chutes enviados</span>
+  <span class="kw">const</span> [current, setCurrent] = <span class="fn">useState</span>(<span class="st">""</span>);   <span class="cm">// chute atual</span>
+  <span class="kw">const</span> [gameOver, setGameOver] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">return</span> <span class="tg">&lt;div&gt;</span>{secret}<span class="tg">&lt;/div&gt;</span>; <span class="cm">// temporário</span>
+}</code></pre>
+
+    <div class="callout callout-tip">
+      <strong>💡 Por que <code>useState(() =&gt; ...)</code> com função?</strong>
+      Passar uma função de inicialização para <code>useState</code> garante que o código rode apenas uma vez — na criação do componente — e não a cada re-render. É a forma correta de inicializar valores aleatórios ou computados.
+    </div>
+
+    <!-- ====== BOARD ====== -->
+    <h2 id="board">Construindo o Tabuleiro</h2>
+    <p>O tabuleiro é uma grade de <strong>6 linhas × 5 colunas</strong>. Cada célula (tile) mostra uma letra e muda de cor conforme o estado.</p>
+
+    <h3>Construindo as linhas</h3>
+    <p>Combinamos os chutes enviados + o chute atual + linhas vazias para sempre ter exatamente 6 linhas:</p>
+
+    <pre><code><span class="cm">// Monta sempre 6 linhas</span>
+<span class="kw">const</span> rows = [
+  ...guesses,           <span class="cm">// chutes já confirmados</span>
+  current,              <span class="cm">// linha sendo digitada</span>
+  ...Array(<span class="vr">MAX_GUESSES</span> - guesses.length - <span class="nm">1</span>).<span class="fn">fill</span>(<span class="st">""</span>) <span class="cm">// vazias</span>
+].<span class="fn">slice</span>(<span class="nm">0</span>, <span class="vr">MAX_GUESSES</span>);</code></pre>
+
+    <h3>Renderizando os tiles</h3>
+
+    <pre><code><span class="kw">return</span> (
+  <span class="tg">&lt;div</span> <span class="at">className</span>=<span class="st">"board"</span><span class="tg">&gt;</span>
+    {rows.<span class="fn">map</span>((guess, rowIdx) => (
+      <span class="tg">&lt;div</span> <span class="at">key</span>={rowIdx} <span class="at">className</span>=<span class="st">"row"</span><span class="tg">&gt;</span>
+        {Array.<span class="fn">from</span>({ length: <span class="vr">WORD_LENGTH</span> }, (_, colIdx) => {
+          <span class="kw">const</span> letter = guess[colIdx] || <span class="st">""</span>;
+          <span class="kw">const</span> isSubmitted = rowIdx &lt; guesses.length;
+          <span class="kw">const</span> state = isSubmitted
+            ? <span class="fn">getTileState</span>(guess, colIdx, secret)
+            : letter ? <span class="st">"tbd"</span> : <span class="st">"empty"</span>;
+
+          <span class="kw">return</span> (
+            <span class="tg">&lt;div</span> <span class="at">key</span>={colIdx} <span class="at">className</span>={<span class="st">`tile tile-${state}`</span>}<span class="tg">&gt;</span>
+              {letter}
+            <span class="tg">&lt;/div&gt;</span>
+          );
+        })}
+      <span class="tg">&lt;/div&gt;</span>
+    ))}
+  <span class="tg">&lt;/div&gt;</span>
+);</code></pre>
+
+    <!-- ====== LOGICA ====== -->
+    <h2 id="logica">Lógica das Cores</h2>
+    <p>Esta é a parte mais importante do Wordle. Para cada letra de um chute, precisamos determinar:</p>
+
+    <table>
+      <thead><tr><th>Estado</th><th>Cor</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><code>"correct"</code></td><td style="color:#538d4e;font-weight:700">Verde 🟩</td><td>Letra certa, posição certa</td></tr>
+        <tr><td><code>"present"</code></td><td style="color:#b59f3b;font-weight:700">Amarelo 🟨</td><td>Letra certa, posição errada</td></tr>
+        <tr><td><code>"absent"</code></td><td style="color:#888;font-weight:700">Cinza ⬛</td><td>Letra não está na palavra</td></tr>
+      </tbody>
+    </table>
+
+    <pre><code><span class="cm">// Retorna o estado de UMA letra em uma posição</span>
+<span class="kw">function</span> <span class="fn">getTileState</span>(guess, index, secret) {
+  <span class="kw">const</span> letter = guess[index];
+  <span class="kw">if</span> (!letter) <span class="kw">return</span> <span class="st">"empty"</span>;
+  <span class="kw">if</span> (secret[index] === letter) <span class="kw">return</span> <span class="st">"correct"</span>;  <span class="cm">// ✅ posição exata</span>
+  <span class="kw">if</span> (secret.<span class="fn">includes</span>(letter)) <span class="kw">return</span> <span class="st">"present"</span>; <span class="cm">// 🔄 está na palavra</span>
+  <span class="kw">return</span> <span class="st">"absent"</span>;                               <span class="cm">// ❌ não existe</span>
+}</code></pre>
+
+    <div class="callout callout-note">
+      <strong>📌 Simplificação</strong>
+      Esta implementação é uma versão simplificada. O Wordle original tem uma lógica mais sofisticada para lidar com letras duplicadas (ex: se a palavra é "ABBEY" e você chuta "ADDED", apenas um dos "D" fica amarelo). Para este tutorial, mantemos a lógica simples.
+    </div>
+
+    <h3>Aplicando cores via CSS</h3>
+    <pre><code><span class="filename">src/index.css</span><span class="vr">.tile</span> {
+  <span class="at">width</span>: <span class="nm">62</span>px; <span class="at">height</span>: <span class="nm">62</span>px;
+  <span class="at">border</span>: <span class="nm">2</span>px solid <span class="st">#565758</span>;
+  <span class="at">display</span>: flex;
+  <span class="at">align-items</span>: center;
+  <span class="at">justify-content</span>: center;
+  <span class="at">font-size</span>: <span class="nm">32</span>px;
+  <span class="at">font-weight</span>: <span class="nm">700</span>;
+  <span class="at">color</span>: <span class="st">#fff</span>;
+  <span class="at">transition</span>: background <span class="nm">0.3s</span>, border-color <span class="nm">0.3s</span>;
+}
+<span class="vr">.tile-correct</span> { <span class="at">background</span>: <span class="st">#538d4e</span>; <span class="at">border-color</span>: <span class="st">#538d4e</span>; }
+<span class="vr">.tile-present</span> { <span class="at">background</span>: <span class="st">#b59f3b</span>; <span class="at">border-color</span>: <span class="st">#b59f3b</span>; }
+<span class="vr">.tile-absent</span>  { <span class="at">background</span>: <span class="st">#3a3a3c</span>; <span class="at">border-color</span>: <span class="st">#3a3a3c</span>; }</code></pre>
+
+    <!-- ====== TECLADO ====== -->
+    <h2 id="teclado">Teclado Virtual e Input</h2>
+    <p>O jogo precisa aceitar entrada de duas formas: teclado físico e cliques no teclado virtual.</p>
+
+    <h3>Capturando o teclado físico</h3>
+    <pre><code><span class="fn">useEffect</span>(() => {
+  <span class="kw">const</span> handler = (e) => <span class="fn">handleKey</span>(e.key.<span class="fn">toUpperCase</span>());
+  window.<span class="fn">addEventListener</span>(<span class="st">"keydown"</span>, handler);
+  <span class="kw">return</span> () => window.<span class="fn">removeEventListener</span>(<span class="st">"keydown"</span>, handler);
+}, [handleKey]);</code></pre>
+
+    <h3>Função handleKey</h3>
+    <pre><code><span class="kw">const</span> handleKey = <span class="fn">useCallback</span>((key) => {
+  <span class="kw">if</span> (gameOver) <span class="kw">return</span>;
+
+  <span class="kw">if</span> (key === <span class="st">"ENTER"</span>) {
+    <span class="fn">submitGuess</span>();
+  } <span class="kw">else if</span> (key === <span class="st">"BACKSPACE"</span> || key === <span class="st">"⌫"</span>) {
+    setCurrent(prev => prev.<span class="fn">slice</span>(<span class="nm">0</span>, -<span class="nm">1</span>)); <span class="cm">// remove última letra</span>
+  } <span class="kw">else if</span> (<span class="st">/^[A-Z]$/</span>.<span class="fn">test</span>(key) &amp;&amp; current.length &lt; <span class="vr">WORD_LENGTH</span>) {
+    setCurrent(prev => prev + key); <span class="cm">// adiciona letra</span>
+  }
+}, [gameOver, current, submitGuess]);</code></pre>
+
+    <div class="callout callout-tip">
+      <strong>💡 Por que <code>useCallback</code>?</strong>
+      Sem <code>useCallback</code>, a função <code>handleKey</code> seria recriada a cada render. Como ela é usada como dependência no <code>useEffect</code> do listener de teclado, isso causaria o listener ser removido e adicionado novamente a cada tecla pressionada. Com <code>useCallback</code>, a função só muda quando suas dependências mudam.
+    </div>
+
+    <h3>Renderizando o teclado</h3>
+    <pre><code><span class="kw">const</span> <span class="vr">KEYBOARD_ROWS</span> = [
+  [<span class="st">"Q"</span>,<span class="st">"W"</span>,<span class="st">"E"</span>,<span class="st">"R"</span>,<span class="st">"T"</span>,<span class="st">"Y"</span>,<span class="st">"U"</span>,<span class="st">"I"</span>,<span class="st">"O"</span>,<span class="st">"P"</span>],
+  [<span class="st">"A"</span>,<span class="st">"S"</span>,<span class="st">"D"</span>,<span class="st">"F"</span>,<span class="st">"G"</span>,<span class="st">"H"</span>,<span class="st">"J"</span>,<span class="st">"K"</span>,<span class="st">"L"</span>],
+  [<span class="st">"ENTER"</span>,<span class="st">"Z"</span>,<span class="st">"X"</span>,<span class="st">"C"</span>,<span class="st">"V"</span>,<span class="st">"B"</span>,<span class="st">"N"</span>,<span class="st">"M"</span>,<span class="st">"⌫"</span>],
+];
+
+<span class="cm">// Descobrir o melhor estado de uma tecla</span>
+<span class="kw">function</span> <span class="fn">getKeyState</span>(letter, guesses, secret) {
+  <span class="kw">let</span> best = <span class="kw">null</span>;
+  <span class="kw">for</span> (<span class="kw">const</span> guess <span class="kw">of</span> guesses) {
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="nm">0</span>; i &lt; guess.length; i++) {
+      <span class="kw">if</span> (guess[i] !== letter) <span class="kw">continue</span>;
+      <span class="kw">const</span> state = <span class="fn">getTileState</span>(guess, i, secret);
+      <span class="kw">if</span> (state === <span class="st">"correct"</span>) <span class="kw">return</span> <span class="st">"correct"</span>; <span class="cm">// melhor possível</span>
+      <span class="kw">if</span> (state === <span class="st">"present"</span>) best = <span class="st">"present"</span>;
+      <span class="kw">else if</span> (!best) best = <span class="st">"absent"</span>;
+    }
+  }
+  <span class="kw">return</span> best;
+}
+
+<span class="cm">// No JSX:</span>
+{<span class="vr">KEYBOARD_ROWS</span>.<span class="fn">map</span>((row, rIdx) => (
+  <span class="tg">&lt;div</span> <span class="at">key</span>={rIdx} <span class="at">className</span>=<span class="st">"keyboard-row"</span><span class="tg">&gt;</span>
+    {row.<span class="fn">map</span>((key) => (
+      <span class="tg">&lt;button</span>
+        <span class="at">key</span>={key}
+        <span class="at">onClick</span>={() => <span class="fn">handleKey</span>(key)}
+        <span class="at">className</span>={<span class="st">`key key-${</span><span class="fn">getKeyState</span>(key, guesses, secret)<span class="st">}`</span>}
+      <span class="tg">&gt;</span>
+        {key}
+      <span class="tg">&lt;/button&gt;</span>
+    ))}
+  <span class="tg">&lt;/div&gt;</span>
+))}</code></pre>
+
+    <!-- ====== FIM ====== -->
+    <h2 id="fim">Fim de Jogo e Feedback</h2>
+
+    <h3>Enviando um chute</h3>
+    <pre><code><span class="kw">const</span> submitGuess = <span class="fn">useCallback</span>(() => {
+  <span class="cm">// Validação: palavra incompleta</span>
+  <span class="kw">if</span> (current.length &lt; <span class="vr">WORD_LENGTH</span>) {
+    <span class="fn">showMessage</span>(<span class="st">"Palavra muito curta!"</span>);
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">const</span> newGuesses = [...guesses, current];
+  setGuesses(newGuesses);
+  setCurrent(<span class="st">""</span>);
+
+  <span class="cm">// Verificar vitória</span>
+  <span class="kw">if</span> (current === secret) {
+    <span class="fn">showMessage</span>(<span class="st">"Incrível! 🎉"</span>);
+    <span class="fn">setGameOver</span>(<span class="kw">true</span>);
+    <span class="kw">return</span>;
+  }
+
+  <span class="cm">// Verificar derrota</span>
+  <span class="kw">if</span> (newGuesses.length >= <span class="vr">MAX_GUESSES</span>) {
+    <span class="fn">showMessage</span>(<span class="st">`Era: ${secret}`</span>, <span class="nm">4000</span>);
+    <span class="fn">setGameOver</span>(<span class="kw">true</span>);
+  }
+}, [current, guesses, secret]);</code></pre>
+
+    <h3>Mensagem toast</h3>
+    <pre><code><span class="kw">const</span> [message, setMessage] = <span class="fn">useState</span>(<span class="st">""</span>);
+
+<span class="kw">const</span> showMessage = (msg, duration = <span class="nm">1800</span>) => {
+  <span class="fn">setMessage</span>(msg);
+  <span class="fn">setTimeout</span>(() => <span class="fn">setMessage</span>(<span class="st">""</span>), duration);
+};
+
+<span class="cm">// No JSX — aparece e desaparece suavemente:</span>
+<span class="tg">&lt;div</span> <span class="at">style</span>={{
+  opacity: message ? <span class="nm">1</span> : <span class="nm">0</span>,
+  transform: message ? <span class="st">"translateY(0)"</span> : <span class="st">"translateY(-10px)"</span>,
+  transition: <span class="st">"all 0.2s"</span>
+}}<span class="tg">&gt;</span>
+  {message}
+<span class="tg">&lt;/div&gt;</span></code></pre>
+
+    <!-- ====== COMPLETO ====== -->
+    <h2 id="completo">Código Completo</h2>
+    <p>O arquivo <code>wordle-game.jsx</code> contém o jogo completo e funcional. Você pode copiá-lo diretamente para seu projeto:</p>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Progresso do tutorial</span><span>100%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>✅ Próximos passos</strong>
+      Agora que você tem o jogo funcionando, experimente: adicionar animação de flip nos tiles ao revelar, implementar um placar de distribuição de tentativas, salvar o estado no <code>localStorage</code>, ou validar se o chute é uma palavra real usando uma API de dicionário.
+    </div>
+
+    <div class="nav-bottom">
+      <span style="color:var(--text-muted); font-size:14px">Tutorial completo ✓</span>
+      <a class="nav-btn" href="https://react.dev" target="_blank">Explorar React.dev →</a>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
